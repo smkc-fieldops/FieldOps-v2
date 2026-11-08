@@ -7,6 +7,7 @@
 import { addDays, istDate } from '../../shared/clock/ist';
 import type { EffectiveShift } from '../shifts/shifts.policy';
 import type { AttendanceStatus, CheckoutType } from './attendance-types';
+import { type AttendanceTiming, graceEndsAt, halfDayPointAt } from './attendance.policy';
 import { routeLengthMeters } from './geo.policy';
 
 const MINUTE = 60_000;
@@ -232,23 +233,33 @@ export type DayCloseStatus = 'REGULARIZED' | 'ON_LEAVE' | 'HOLIDAY_OFF' | 'ABSEN
 
 /**
  * What to record for someone expected on a day (an approved ward placement, or office staff)
- * who has no attendance row. Nothing until the shift has ended (check-in closes then); then an
- * approved correction, approved leave, an office holiday / Sunday, or else ABSENT. Field
- * staff placed on a holiday are expected: sanitation works every day.
+ * who has no attendance row. Nothing until the half-day point; then an approved correction,
+ * approved leave, an office holiday / Sunday, or else ABSENT. A later check-in still lands on
+ * this row and makes it a half day. Field staff placed on a holiday are expected: sanitation
+ * works every day.
  */
 export function dayCloseStatus(input: {
   kind: 'WARD' | 'OFFICE';
-  shiftEnded: boolean;
+  pastHalfDayPoint: boolean;
   regularized: boolean;
   onLeave: boolean;
   holiday: boolean;
   weeklyOff: boolean;
 }): DayCloseStatus | null {
-  if (!input.shiftEnded) return null;
+  if (!input.pastHalfDayPoint) return null;
   if (input.regularized) return 'REGULARIZED';
   if (input.onLeave) return 'ON_LEAVE';
   if (input.kind === 'OFFICE' && (input.holiday || input.weeklyOff)) return 'HOLIDAY_OFF';
   return 'ABSENT';
+}
+
+export function pastHalfDayPoint(shift: EffectiveShift, now: Date, timing: AttendanceTiming): boolean {
+  return now > halfDayPointAt(shift, timing);
+}
+
+/** Between the end of the grace and the half-day point, no check-in means "not checked in yet". */
+export function notCheckedInDue(shift: EffectiveShift, now: Date, timing: AttendanceTiming): boolean {
+  return now > graceEndsAt(shift, timing) && !pastHalfDayPoint(shift, now, timing);
 }
 
 /**

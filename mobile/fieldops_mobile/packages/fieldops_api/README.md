@@ -96,6 +96,9 @@ Class | Method | HTTP request | Description
 [*ComplaintsApi*](doc/ComplaintsApi.md) | [**complaintsControllerGet**](doc/ComplaintsApi.md#complaintscontrollerget) | **GET** /api/v1/complaints/{id} | One complaint with its linked tasks
 [*ComplaintsApi*](doc/ComplaintsApi.md) | [**complaintsControllerList**](doc/ComplaintsApi.md#complaintscontrollerlist) | **GET** /api/v1/complaints | Complaints in your scope (admin and office staff: all; ward supervisors: ward)
 [*FaceApi*](doc/FaceApi.md) | [**faceControllerCaptureOptions**](doc/FaceApi.md#facecontrollercaptureoptions) | **GET** /api/v1/face/capture-options | Which face capture flow the app should run (local or Aadhaar FaceRD)
+[*FaceApi*](doc/FaceApi.md) | [**faceControllerClearEnrolments**](doc/FaceApi.md#facecontrollerclearenrolments) | **DELETE** /api/v1/face/enrolments/{staffId} | Remove all of a person&#39;s enrolment photos, so they can be enrolled again
+[*FaceApi*](doc/FaceApi.md) | [**faceControllerEnrol**](doc/FaceApi.md#facecontrollerenrol) | **POST** /api/v1/face/enrolments | Add one enrolment photo (up to 5); the photo is embedded and dropped
+[*FaceApi*](doc/FaceApi.md) | [**faceControllerListEnrolments**](doc/FaceApi.md#facecontrollerlistenrolments) | **GET** /api/v1/face/enrolments/{staffId} | A person&#39;s enrolled face photos (dates only; never the photo or embedding)
 [*HealthApi*](doc/HealthApi.md) | [**healthControllerHealth**](doc/HealthApi.md#healthcontrollerhealth) | **GET** /api/v1/health | Liveness: the process is up
 [*HealthApi*](doc/HealthApi.md) | [**healthControllerReady**](doc/HealthApi.md#healthcontrollerready) | **GET** /api/v1/ready | Readiness: database reachable and all migrations applied
 [*HolidaysApi*](doc/HolidaysApi.md) | [**holidaysControllerCreate**](doc/HolidaysApi.md#holidayscontrollercreate) | **POST** /api/v1/holidays | Add a holiday (ADMIN, today or later)
@@ -190,6 +193,7 @@ Class | Method | HTTP request | Description
  - [ConversationDto](doc/ConversationDto.md)
  - [CreateAssignmentDto](doc/CreateAssignmentDto.md)
  - [CreateChallengeDto](doc/CreateChallengeDto.md)
+ - [CreateFaceEnrolmentDto](doc/CreateFaceEnrolmentDto.md)
  - [CreateHolidayDto](doc/CreateHolidayDto.md)
  - [CreateLeaveDto](doc/CreateLeaveDto.md)
  - [CreateOfficeDto](doc/CreateOfficeDto.md)
@@ -203,6 +207,8 @@ Class | Method | HTTP request | Description
  - [EffectiveShiftDto](doc/EffectiveShiftDto.md)
  - [ErrorCode](doc/ErrorCode.md)
  - [FaceCaptureOptionsDto](doc/FaceCaptureOptionsDto.md)
+ - [FaceEnrolmentDto](doc/FaceEnrolmentDto.md)
+ - [FaceEnrolmentListDto](doc/FaceEnrolmentListDto.md)
  - [GenerateAssignmentsDto](doc/GenerateAssignmentsDto.md)
  - [GenerateAssignmentsResultDto](doc/GenerateAssignmentsResultDto.md)
  - [HealthDto](doc/HealthDto.md)

@@ -104,9 +104,10 @@ class FaceCrop {
   static const maxBytes = 70 * 1024;
   static const side = 320;
 
-  /// Cuts the face with a margin, scales the longer side to [side] px and
+  /// Cuts the face with a wide margin (the server's anti-spoofing model looks
+  /// at 1.5x the face; tighter crops read as spoofs), scales the longer side to [side] px and
   /// encodes a JPEG under [maxBytes]. Returns null if nothing fits.
-  static Uint8List? fromJpeg(Uint8List photo, FaceBox box, {double margin = 0.3}) {
+  static Uint8List? fromJpeg(Uint8List photo, FaceBox box, {double margin = 0.5}) {
     final decoded = img.decodeImage(photo);
     if (decoded == null) return null;
     final image = img.bakeOrientation(decoded);

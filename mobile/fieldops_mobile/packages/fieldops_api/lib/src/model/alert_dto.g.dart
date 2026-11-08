@@ -24,6 +24,8 @@ const AlertDtoAlertTypeEnum _$alertDtoAlertTypeEnum_TASK_OVERDUE =
     const AlertDtoAlertTypeEnum._('TASK_OVERDUE');
 const AlertDtoAlertTypeEnum _$alertDtoAlertTypeEnum_REPEATED_LATE =
     const AlertDtoAlertTypeEnum._('REPEATED_LATE');
+const AlertDtoAlertTypeEnum _$alertDtoAlertTypeEnum_NOT_CHECKED_IN =
+    const AlertDtoAlertTypeEnum._('NOT_CHECKED_IN');
 
 AlertDtoAlertTypeEnum _$alertDtoAlertTypeEnumValueOf(String name) {
   switch (name) {
@@ -45,6 +47,8 @@ AlertDtoAlertTypeEnum _$alertDtoAlertTypeEnumValueOf(String name) {
       return _$alertDtoAlertTypeEnum_TASK_OVERDUE;
     case 'REPEATED_LATE':
       return _$alertDtoAlertTypeEnum_REPEATED_LATE;
+    case 'NOT_CHECKED_IN':
+      return _$alertDtoAlertTypeEnum_NOT_CHECKED_IN;
     default:
       throw ArgumentError(name);
   }
@@ -61,6 +65,7 @@ final BuiltSet<AlertDtoAlertTypeEnum> _$alertDtoAlertTypeEnumValues =
   _$alertDtoAlertTypeEnum_STATIONARY_TOO_LONG,
   _$alertDtoAlertTypeEnum_TASK_OVERDUE,
   _$alertDtoAlertTypeEnum_REPEATED_LATE,
+  _$alertDtoAlertTypeEnum_NOT_CHECKED_IN,
 ]);
 
 const AlertDtoSeverityEnum _$alertDtoSeverityEnum_LOW =
@@ -112,6 +117,7 @@ class _$AlertDtoAlertTypeEnumSerializer
     'STATIONARY_TOO_LONG': 'STATIONARY_TOO_LONG',
     'TASK_OVERDUE': 'TASK_OVERDUE',
     'REPEATED_LATE': 'REPEATED_LATE',
+    'NOT_CHECKED_IN': 'NOT_CHECKED_IN',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
     'LATE_CHECKIN': 'LATE_CHECKIN',
@@ -123,6 +129,7 @@ class _$AlertDtoAlertTypeEnumSerializer
     'STATIONARY_TOO_LONG': 'STATIONARY_TOO_LONG',
     'TASK_OVERDUE': 'TASK_OVERDUE',
     'REPEATED_LATE': 'REPEATED_LATE',
+    'NOT_CHECKED_IN': 'NOT_CHECKED_IN',
   };
 
   @override

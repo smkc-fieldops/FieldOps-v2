@@ -5762,7 +5762,8 @@
                 "TAMPER_DETECTED",
                 "STATIONARY_TOO_LONG",
                 "TASK_OVERDUE",
-                "REPEATED_LATE"
+                "REPEATED_LATE",
+                "NOT_CHECKED_IN"
               ],
               "type": "string"
             }
@@ -7443,6 +7444,106 @@
         ]
       }
     },
+    "/api/v1/face/enrolments/{staffId}": {
+      "get": {
+        "operationId": "FaceController_listEnrolments",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaceEnrolmentListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "A person's enrolled face photos (dates only; never the photo or embedding)",
+        "tags": [
+          "face"
+        ]
+      },
+      "delete": {
+        "operationId": "FaceController_clearEnrolments",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove all of a person's enrolment photos, so they can be enrolled again",
+        "tags": [
+          "face"
+        ]
+      }
+    },
+    "/api/v1/face/enrolments": {
+      "post": {
+        "operationId": "FaceController_enrol",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFaceEnrolmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaceEnrolmentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add one enrolment photo (up to 5); the photo is embedded and dropped",
+        "tags": [
+          "face"
+        ]
+      }
+    },
     "/api/v1/spot-checks/mine": {
       "get": {
         "operationId": "SpotChecksController_mine",
@@ -8444,6 +8545,8 @@
           "COPRESENCE_FAILED",
           "FACE_PROVIDER_UNAVAILABLE",
           "FACE_NOT_ENROLLED",
+          "FACE_ENROL_PHOTO_UNUSABLE",
+          "FACE_ENROL_LIMIT_REACHED",
           "AADHAAR_CAPTURE_FAILED",
           "AADHAAR_IDENTITY_MISSING"
         ]
@@ -10991,7 +11094,8 @@
               "TAMPER_DETECTED",
               "STATIONARY_TOO_LONG",
               "TASK_OVERDUE",
-              "REPEATED_LATE"
+              "REPEATED_LATE",
+              "NOT_CHECKED_IN"
             ]
           },
           "severity": {
@@ -12328,6 +12432,65 @@
         "required": [
           "provider",
           "instructions"
+        ]
+      },
+      "FaceEnrolmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "staffId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "staffId",
+          "createdAt"
+        ]
+      },
+      "FaceEnrolmentListDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FaceEnrolmentDto"
+            }
+          },
+          "remaining": {
+            "type": "number",
+            "description": "How many more photos can be added",
+            "example": 4
+          }
+        },
+        "required": [
+          "items",
+          "remaining"
+        ]
+      },
+      "CreateFaceEnrolmentDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "imageBase64": {
+            "type": "string",
+            "description": "Base64 JPEG of the person's face (≤ 96000 chars); never stored"
+          }
+        },
+        "required": [
+          "staffId",
+          "imageBase64"
         ]
       },
       "SpotCheckDto": {

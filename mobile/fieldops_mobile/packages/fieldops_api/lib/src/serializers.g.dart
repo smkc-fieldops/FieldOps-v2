@@ -40,6 +40,7 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(ConversationDtoTypeEnum.serializer)
       ..add(CreateAssignmentDto.serializer)
       ..add(CreateChallengeDto.serializer)
+      ..add(CreateFaceEnrolmentDto.serializer)
       ..add(CreateHolidayDto.serializer)
       ..add(CreateHolidayDtoHolidayTypeEnum.serializer)
       ..add(CreateLeaveDto.serializer)
@@ -65,6 +66,8 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(FaceCaptureOptionsDto.serializer)
       ..add(FaceCaptureOptionsDtoInstructionsEnum.serializer)
       ..add(FaceCaptureOptionsDtoProviderEnum.serializer)
+      ..add(FaceEnrolmentDto.serializer)
+      ..add(FaceEnrolmentListDto.serializer)
       ..add(GenerateAssignmentsDto.serializer)
       ..add(GenerateAssignmentsResultDto.serializer)
       ..add(HealthDto.serializer)
@@ -203,6 +206,9 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(ComplaintDto)]),
           () => ListBuilder<ComplaintDto>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(FaceEnrolmentDto)]),
+          () => ListBuilder<FaceEnrolmentDto>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(LeaveRequestDto)]),
           () => ListBuilder<LeaveRequestDto>())

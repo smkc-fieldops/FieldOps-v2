@@ -230,15 +230,10 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(6),
                             ],
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: '1 2 3 4 5 6',
-                              helperText: 'otp_helper'.tr,
-                              helperStyle: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
                               filled: true,
-                              fillColor: const Color(0xFFF9FAFB),
+                              fillColor: Color(0xFFF9FAFB),
                             ),
                             style: const TextStyle(
                               letterSpacing: 8,

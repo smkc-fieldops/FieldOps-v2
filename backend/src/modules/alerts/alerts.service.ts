@@ -180,6 +180,25 @@ export class AlertsService {
     return toAlertDto((await this.repo.findById(id))!);
   }
 
+  /** Closes alerts events have overtaken, as the system. Unknown or closed ones are skipped. */
+  async resolveBySystem(dedupeKeys: string[], note: string): Promise<void> {
+    for (const key of dedupeKeys) {
+      const row = await this.repo.findByDedupeKey(key);
+      if (!row || Number(row.isResolved)) continue;
+      await this.uow.run(async (tx) => {
+        const n = await this.repo.resolve(row.id, null, this.clock.now(), note, tx);
+        if (n === 0) return;
+        await this.audit.write(tx, {
+          action: 'ALERT_RESOLVED',
+          entityType: 'alert',
+          entityId: row.id,
+          actorRole: 'SYSTEM',
+          details: { alertType: row.alertType, note },
+        });
+      });
+    }
+  }
+
   /** The alert, if the caller may see and act on it (else 404). */
   private async handled(actor: AuthUser, id: string): Promise<Alert> {
     const row = await this.repo.findById(id);

@@ -123,6 +123,11 @@ describe('validateEnv', () => {
     expect(env.MOBILE_LATEST_VERSION_CODE).toBe(3);
     expect(env.UPLOAD_MAX_BYTES).toBe(2_000_000);
     expect(env.UPLOAD_DIR).toBe('storage/uploads');
+    expect(env.FACE_MODEL_DIR).toBe('storage/models');
+    expect(env.ATTENDANCE_LATE_GRACE_MINUTES).toBe(15);
+    expect(env.ATTENDANCE_HALF_DAY_AFTER_PERCENT).toBe(50);
+    expect(env.FACE_MAX_PARALLEL).toBe(2);
+    expect(env.FACE_THREADS).toBe(2);
     expect(() =>
       validateEnv({
         ...base,

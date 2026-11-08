@@ -238,7 +238,7 @@ describe('attendance punches (e2e)', () => {
 
     it.each<[string, string, Record<string, unknown>, number, string]>([
       ['outside the ward', 'IN2', OUTSIDE, 422, 'OUTSIDE_GEOFENCE'],
-      ['a coarse GPS fix', 'IN2', { accuracyM: 30 }, 422, 'LOCATION_TOO_INACCURATE'],
+      ['a coarse GPS fix', 'IN2', { accuracyM: 60 }, 422, 'LOCATION_TOO_INACCURATE'],
       ['without an assignment', 'WK3', {}, 422, 'NO_ASSIGNMENT'],
       ['with an unapproved self-join', 'WK4', {}, 422, 'ASSIGNMENT_NOT_APPROVED'],
       ['without a face image', 'IN2', { faceImageBase64: undefined }, 400, 'VALIDATION_FAILED'],

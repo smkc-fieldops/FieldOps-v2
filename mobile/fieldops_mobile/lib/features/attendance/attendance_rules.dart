@@ -6,7 +6,7 @@ class AttendanceRules {
   static const ist = Duration(hours: 5, minutes: 30);
 
   /// Required GPS accuracy before a punch is sent (the server checks again).
-  static const fieldAccuracyM = 25.0;
+  static const fieldAccuracyM = 50.0;
   static const officeAccuracyM = 100.0;
 
   static double accuracyLimitM(String role) =>

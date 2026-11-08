@@ -17,8 +17,8 @@ void main() {
     });
 
     test('accuracy: 25 m in the field, 100 m in the office', () {
-      expect(AttendanceRules.accuracyLimitM('WORKER'), 25);
-      expect(AttendanceRules.accuracyLimitM('INSPECTOR'), 25);
+      expect(AttendanceRules.accuracyLimitM('WORKER'), 50);
+      expect(AttendanceRules.accuracyLimitM('INSPECTOR'), 50);
       expect(AttendanceRules.accuracyLimitM('OFFICE_STAFF'), 100);
     });
 

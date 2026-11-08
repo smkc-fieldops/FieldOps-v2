@@ -226,11 +226,29 @@ describe('punchPlace', () => {
   });
 });
 
+describe('lateMark with configured timing', () => {
+  const shift = {
+    date: '2026-11-02',
+    shiftType: 'DAY',
+    startsAt: new Date('2026-11-02T00:30:00Z'), // 06:00 IST
+    endsAt: new Date('2026-11-02T08:30:00Z'), // 14:00 IST
+  } as unknown as Parameters<typeof lateMark>[1];
+  const timing = { lateGraceMinutes: 30, halfDayAfterPercent: 25 };
+  it.each([
+    ['inside the longer grace', '2026-11-02T01:00:00Z', 'PRESENT'],
+    ['past the grace', '2026-11-02T01:01:00Z', 'LATE'],
+    ['at a quarter of the shift', '2026-11-02T02:30:00Z', 'LATE'],
+    ['past a quarter of the shift', '2026-11-02T02:31:00Z', 'HALF_DAY'],
+  ])('%s', (_name, at, status) => {
+    expect(lateMark(new Date(at), shift, timing).status).toBe(status);
+  });
+});
+
 describe('geofence', () => {
   it.each<['WARD' | 'OFFICE', number, ErrorCode | 'OK']>([
     ['WARD', 0, 'OK'],
-    ['WARD', 25, 'OK'],
-    ['WARD', 25.01, ErrorCode.LOCATION_TOO_INACCURATE],
+    ['WARD', 50, 'OK'],
+    ['WARD', 50.01, ErrorCode.LOCATION_TOO_INACCURATE],
     ['OFFICE', 100, 'OK'],
     ['OFFICE', 101, ErrorCode.LOCATION_TOO_INACCURATE],
     ['WARD', -1, ErrorCode.LOCATION_TOO_INACCURATE],

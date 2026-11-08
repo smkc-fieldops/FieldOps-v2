@@ -79,3 +79,7 @@ CLAUDE.md
 
 # Uploaded photos on a dev/test machine (the server keeps them in UPLOAD_DIR)
 backend/storage/
+
+# Large local downloads (Oracle installer, models): never committed
+downloads/
+.env.oracle

@@ -34,6 +34,13 @@ export class AttendanceScheduler {
     );
   }
 
+  @Cron('0 2,17,32,47 * * * *', { name: 'attendance-not-checked-in' })
+  notCheckedIn(): Promise<void> {
+    return this.run('not-checked-in', slotKey(this.clock.now(), 15), 10, () =>
+      this.jobs.flagNotCheckedIn(),
+    );
+  }
+
   @Cron('0 10,40 * * * *', { name: 'attendance-day-close' })
   dayClose(): Promise<void> {
     return this.run('day-close', slotKey(this.clock.now(), 30), 25, () => this.jobs.closeDays());

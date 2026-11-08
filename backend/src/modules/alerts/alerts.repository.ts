@@ -65,7 +65,7 @@ export class AlertsRepository {
   /** Marks an open alert resolved. Returns rows updated: 0 = someone resolved it first. */
   async resolve(
     id: string,
-    resolvedById: string,
+    resolvedById: string | null,
     at: Date,
     note: string | null,
     tx?: EntityManager,

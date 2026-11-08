@@ -52,6 +52,7 @@ export const ALERT_TYPE_TEXT: Labels<Schemas['AlertDto']['alertType']> = {
   STATIONARY_TOO_LONG: { en: 'Stationary too long', mr: 'खूप वेळ एकाच जागी' },
   TASK_OVERDUE: { en: 'Task overdue', mr: 'काम मुदतीबाहेर' },
   REPEATED_LATE: { en: 'Repeatedly late', mr: 'वारंवार उशिरा' },
+  NOT_CHECKED_IN: { en: 'Not checked in', mr: 'अजून हजेरी नाही' },
 };
 
 export const SEVERITY_TEXT: Labels<Schemas['AlertDto']['severity']> = {

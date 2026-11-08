@@ -111,7 +111,7 @@ export function punchPlace(subject: PunchSubject, assignment: PunchAssignment | 
 // ------------------------------------------------------------------ Geofence
 
 /** Field staff need a settled fix; office staff may be indoors (matches the 100 m office buffer). */
-export const FIELD_MAX_ACCURACY_M = 25;
+export const FIELD_MAX_ACCURACY_M = 50;
 export const OFFICE_MAX_ACCURACY_M = 100;
 
 export function maxAccuracyFor(kind: PunchPlace['kind']): number {
@@ -157,8 +157,19 @@ export function checkCheckinGeofence(result: GeofenceResult, kind: PunchPlace['k
 
 /** Check-in opens this long before the shift starts. */
 export const EARLY_CHECKIN_MINUTES = 60;
-/** v4: up to 15 minutes after the start is on time. */
-export const LATE_GRACE_MINUTES = 15;
+/** How a worker's shift times turn into marks. Set per server (ATTENDANCE_* settings). */
+export interface AttendanceTiming {
+  /** Up to this many minutes after the shift start is on time. */
+  lateGraceMinutes: number;
+  /** Past this share of the shift a check-in is a half day, and no check-in shows as absent. */
+  halfDayAfterPercent: number;
+}
+
+/** v4: up to 15 minutes after the start is on time; past half the shift is a half day. */
+export const DEFAULT_ATTENDANCE_TIMING: AttendanceTiming = {
+  lateGraceMinutes: 15,
+  halfDayAfterPercent: 50,
+};
 /** v4: the third late mark in a calendar month raises a REPEATED_LATE alert. */
 export const REPEATED_LATE_THRESHOLD = 3;
 
@@ -200,18 +211,35 @@ export interface LateMark {
   lateMinutes: number;
 }
 
+/** When the grace ends: later check-ins are late. */
+export function graceEndsAt(shift: EffectiveShift, timing: AttendanceTiming): Date {
+  return new Date(shift.startsAt.getTime() + timing.lateGraceMinutes * MINUTE);
+}
+
+/** The half-day point: later check-ins are half days, and no check-in by then shows as absent. */
+export function halfDayPointAt(shift: EffectiveShift, timing: AttendanceTiming): Date {
+  const length = shift.endsAt.getTime() - shift.startsAt.getTime();
+  return new Date(shift.startsAt.getTime() + (length * timing.halfDayAfterPercent) / 100);
+}
+
 /**
- * On time up to and including the 15-minute grace; late after it, counting from the shift
- * start; a half day once more than half the shift has passed.
+ * On time up to and including the grace; late after it, counting from the shift start; a half
+ * day once past the half-day point.
  */
-export function lateMark(checkinAt: Date, shift: EffectiveShift): LateMark {
-  const afterStart = checkinAt.getTime() - shift.startsAt.getTime();
-  if (afterStart <= LATE_GRACE_MINUTES * MINUTE) {
+export function lateMark(
+  checkinAt: Date,
+  shift: EffectiveShift,
+  timing: AttendanceTiming = DEFAULT_ATTENDANCE_TIMING,
+): LateMark {
+  if (checkinAt <= graceEndsAt(shift, timing)) {
     return { status: 'PRESENT', isLate: false, lateMinutes: 0 };
   }
-  const lateMinutes = Math.ceil(afterStart / MINUTE);
-  const halfShift = (shift.endsAt.getTime() - shift.startsAt.getTime()) / 2;
-  return { status: afterStart > halfShift ? 'HALF_DAY' : 'LATE', isLate: true, lateMinutes };
+  const lateMinutes = Math.ceil((checkinAt.getTime() - shift.startsAt.getTime()) / MINUTE);
+  return {
+    status: checkinAt > halfDayPointAt(shift, timing) ? 'HALF_DAY' : 'LATE',
+    isLate: true,
+    lateMinutes,
+  };
 }
 
 /** True once this month's late marks (including the new one) reach the threshold. */

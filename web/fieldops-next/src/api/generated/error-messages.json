@@ -193,6 +193,14 @@
       "en": "No enrolled face for this person; ask an administrator to enrol you",
       "mr": "या व्यक्तीचा चेहरा नोंदवलेला नाही; प्रशासकाकडून नोंदणी करून घ्या"
     },
+    "FACE_ENROL_PHOTO_UNUSABLE": {
+      "en": "The photo must show exactly one clear face",
+      "mr": "फोटोमध्ये एकच स्पष्ट चेहरा असावा"
+    },
+    "FACE_ENROL_LIMIT_REACHED": {
+      "en": "This person already has the most enrolment photos allowed; clear them first",
+      "mr": "या व्यक्तीचे जास्तीत जास्त नोंदणी फोटो झाले आहेत; आधी ते काढून टाका"
+    },
     "AADHAAR_CAPTURE_FAILED": {
       "en": "Aadhaar face capture failed; try again",
       "mr": "आधार चेहरा कॅप्चर अयशस्वी; पुन्हा प्रयत्न करा"

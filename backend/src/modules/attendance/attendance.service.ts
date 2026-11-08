@@ -252,7 +252,7 @@ export class AttendanceService {
     checkCheckinGeofence(geo, place.kind);
 
     const face = await this.proveFace(actor, subject, dto, now);
-    const mark = lateMark(now, shift);
+    const mark = lateMark(now, shift, this.config.attendanceTiming);
     const fields: Partial<AttendanceLog> = {
       wardId: place.kind === 'WARD' ? place.wardId : null,
       officeId: place.kind === 'OFFICE' ? place.officeId : null,
@@ -661,6 +661,14 @@ export class AttendanceService {
 
   private async afterCheckIn(log: AttendanceLog, subject: Staff, mocked: boolean): Promise<void> {
     if (mocked) await this.raiseMockLocation(log, subject);
+    // They arrived: the "not here" alerts from the day's jobs no longer apply.
+    await this.alerts.resolveBySystem(
+      [
+        dedupeKey('NOT_CHECKED_IN', subject.id, log.attendanceDate),
+        dedupeKey('ABSENT', subject.id, log.attendanceDate),
+      ],
+      'Checked in later',
+    );
     if (!bool(log.isLate)) return;
     const minutes = Number(log.lateMinutes);
     await this.raise({

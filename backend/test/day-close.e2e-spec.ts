@@ -99,8 +99,8 @@ describe('day close (e2e)', () => {
     await t?.app.close();
   });
 
-  it('writes nothing while the shift is still running', async () => {
-    clock.set('2026-11-02T07:00:00Z'); // 12:30 IST on DAY, shift 06:00-14:00
+  it('writes nothing before the half-day point of the shift', async () => {
+    clock.set('2026-11-02T04:00:00Z'); // 09:30 IST on DAY, shift 06:00-14:00
     await jobs.closeDays();
     expect(await statusOf('WK1')).toBeNull();
     expect(await statusOf('WK2')).toBeNull();

@@ -4,11 +4,13 @@ import {
   autoCheckoutDue,
   dayCloseDates,
   dayCloseStatus,
-  isWeeklyOff,
-  reconciledStatus,
   isSilent,
+  isWeeklyOff,
+  notCheckedInDue,
+  pastHalfDayPoint,
   pingDate,
   pingWindow,
+  reconciledStatus,
   retentionCutoff,
   rollupDates,
   RoutePing,
@@ -248,15 +250,42 @@ describe('day close', () => {
 
   const base = {
     kind: 'WARD' as const,
-    shiftEnded: true,
+    pastHalfDayPoint: true,
     regularized: false,
     onLeave: false,
     holiday: false,
     weeklyOff: false,
   };
+  describe('during the shift', () => {
+    const shift = {
+      date: '2026-11-02',
+      shiftType: 'DAY',
+      startsAt: new Date('2026-11-02T00:30:00Z'), // 06:00 IST
+      endsAt: new Date('2026-11-02T08:30:00Z'), // 14:00 IST
+    } as unknown as Parameters<typeof notCheckedInDue>[0];
+    const timing = { lateGraceMinutes: 15, halfDayAfterPercent: 50 };
+    it.each([
+      ['before the shift', '2026-11-02T00:00:00Z', false, false],
+      ['at the end of the grace', '2026-11-02T00:45:00Z', false, false],
+      ['just past the grace', '2026-11-02T00:46:00Z', true, false],
+      ['at the half-day point', '2026-11-02T04:30:00Z', true, false],
+      ['just past the half-day point', '2026-11-02T04:31:00Z', false, true],
+      ['after the shift', '2026-11-02T09:00:00Z', false, true],
+    ])('%s', (_name, at, alert, absent) => {
+      expect(notCheckedInDue(shift, new Date(at), timing)).toBe(alert);
+      expect(pastHalfDayPoint(shift, new Date(at), timing)).toBe(absent);
+    });
+
+    it('follows the configured values', () => {
+      const custom = { lateGraceMinutes: 30, halfDayAfterPercent: 25 };
+      expect(notCheckedInDue(shift, new Date('2026-11-02T00:46:00Z'), custom)).toBe(false);
+      expect(pastHalfDayPoint(shift, new Date('2026-11-02T02:31:00Z'), custom)).toBe(true);
+    });
+  });
+
   it.each([
-    ['shift still running: wait', { shiftEnded: false }, null],
-    ['no check-in after the shift: absent', {}, 'ABSENT'],
+    ['before the half-day point: wait', { pastHalfDayPoint: false }, null],
+    ['no check-in past the half-day point: absent', {}, 'ABSENT'],
     ['approved leave', { onLeave: true }, 'ON_LEAVE'],
     ['approved correction wins over leave', { regularized: true, onLeave: true }, 'REGULARIZED'],
     ['office staff on a holiday', { kind: 'OFFICE', holiday: true }, 'HOLIDAY_OFF'],

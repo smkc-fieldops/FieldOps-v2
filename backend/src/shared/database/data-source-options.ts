@@ -30,7 +30,14 @@ export function buildDataSourceOptions(settings: DatabaseSettings): DataSourceOp
       username: settings.username,
       password: settings.password,
       serviceName: settings.serviceName,
-      extra: { poolMax: settings.poolMax },
+      extra: {
+        poolMax: settings.poolMax,
+        // DATE columns hold IST calendar days and queries bind them as 'YYYY-MM-DD' strings, so
+        // every session reads that format (Oracle's default depends on the server's language).
+        sessionCallback: async (connection: { execute(sql: string): Promise<unknown> }): Promise<void> => {
+          await connection.execute(`ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD'`);
+        },
+      },
     };
   }
 

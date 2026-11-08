@@ -33,7 +33,7 @@ abstract class AlertDto implements Built<AlertDto, AlertDtoBuilder> {
 
   @BuiltValueField(wireName: r'alertType')
   AlertDtoAlertTypeEnum get alertType;
-  // enum alertTypeEnum {  LATE_CHECKIN,  OUT_OF_ZONE,  MISSED_SPOT_CHECK,  GHOST_PUNCH,  ABSENT,  TAMPER_DETECTED,  STATIONARY_TOO_LONG,  TASK_OVERDUE,  REPEATED_LATE,  };
+  // enum alertTypeEnum {  LATE_CHECKIN,  OUT_OF_ZONE,  MISSED_SPOT_CHECK,  GHOST_PUNCH,  ABSENT,  TAMPER_DETECTED,  STATIONARY_TOO_LONG,  TASK_OVERDUE,  REPEATED_LATE,  NOT_CHECKED_IN,  };
 
   @BuiltValueField(wireName: r'severity')
   AlertDtoSeverityEnum get severity;
@@ -327,6 +327,8 @@ class AlertDtoAlertTypeEnum extends EnumClass {
   static const AlertDtoAlertTypeEnum TASK_OVERDUE = _$alertDtoAlertTypeEnum_TASK_OVERDUE;
   @BuiltValueEnumConst(wireName: r'REPEATED_LATE')
   static const AlertDtoAlertTypeEnum REPEATED_LATE = _$alertDtoAlertTypeEnum_REPEATED_LATE;
+  @BuiltValueEnumConst(wireName: r'NOT_CHECKED_IN')
+  static const AlertDtoAlertTypeEnum NOT_CHECKED_IN = _$alertDtoAlertTypeEnum_NOT_CHECKED_IN;
 
   static Serializer<AlertDtoAlertTypeEnum> get serializer => _$alertDtoAlertTypeEnumSerializer;
 

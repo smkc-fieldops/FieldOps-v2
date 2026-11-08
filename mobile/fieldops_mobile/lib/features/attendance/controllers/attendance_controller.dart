@@ -125,7 +125,7 @@ class AttendanceController extends GetxController {
     _clientUuid = null;
   }
 
-  /// Step 1: watch GPS until the fix is accurate enough (25 m field, 100 m
+  /// Step 1: watch GPS until the fix is accurate enough (50 m field, 100 m
   /// office) or [gpsTimeout] passes. The best fix is kept either way; the
   /// punch is only offered once [accuracyOk] is true.
   Future<bool> settleGps() async {

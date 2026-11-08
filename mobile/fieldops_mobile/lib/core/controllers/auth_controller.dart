@@ -104,7 +104,7 @@ class AuthController extends GetxController {
     try {
       final deviceId = await _deviceId();
       final res = await _api.auth.authControllerVerifyOtp(
-        userAgent: 'FieldOps-Android/${Env.versionCode}',
+        headers: {'User-Agent': 'FieldOps-Android/${Env.versionCode}'},
         otpVerifyDto: OtpVerifyDto((b) => b
           ..phone = last10
           ..code = otp.trim()

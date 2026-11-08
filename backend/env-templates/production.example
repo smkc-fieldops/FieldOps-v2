@@ -81,6 +81,11 @@ SPOT_CHECK_DAILY_RATE=0.3
 # Inspector proxy punches must scan the worker's rolling QR code (a code sent is always checked).
 COPRESENCE_REQUIRED=false
 
+# How each worker's shift times turn into marks: on time up to the grace, late after it, a
+# half day past this share of the shift (no check-in by then shows as absent until they arrive).
+ATTENDANCE_LATE_GRACE_MINUTES=15
+ATTENDANCE_HALF_DAY_AFTER_PERCENT=50
+
 # Offline map tiles for the SMKMC area (z/x/y.png + manifest.json, built from OSM data;
 # see backend/README.md). Unset: clients use the public OSM tile server.
 # TILE_DIR=storage/tiles
@@ -89,6 +94,11 @@ COPRESENCE_REQUIRED=false
 FACE_PROVIDER=local
 FACE_MATCH_THRESHOLD=0.45
 FACE_LIVENESS_THRESHOLD=0.5
+# Folder holding the three face models (see modules/face/README.md); at most FACE_MAX_PARALLEL
+# analyses run together, each model using FACE_THREADS CPU threads.
+FACE_MODEL_DIR=storage/models
+FACE_MAX_PARALLEL=2
+FACE_THREADS=2
 # Only when FACE_PROVIDER=aadhaar (values issued to SMKC by UIDAI / its ASA):
 # AADHAAR_ENV=PP                      # PP pre-production, P production
 # AADHAAR_API_VERSION=2.5

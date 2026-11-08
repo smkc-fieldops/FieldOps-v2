@@ -24,6 +24,7 @@ export const ALERT_TYPES: AlertType[] = [
   'STATIONARY_TOO_LONG',
   'TASK_OVERDUE',
   'REPEATED_LATE',
+  'NOT_CHECKED_IN',
 ];
 export const ALERT_SEVERITIES: AlertSeverity[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 

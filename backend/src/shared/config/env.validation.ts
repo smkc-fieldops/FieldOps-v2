@@ -56,11 +56,16 @@ export interface Env {
   NOTIFY_GATEWAY_TOKEN?: string;
   SPOT_CHECK_DAILY_RATE: number;
   COPRESENCE_REQUIRED: boolean;
+  ATTENDANCE_LATE_GRACE_MINUTES: number;
+  ATTENDANCE_HALF_DAY_AFTER_PERCENT: number;
   TILE_DIR?: string;
 
   FACE_PROVIDER: FaceProvider;
   FACE_MATCH_THRESHOLD: number;
   FACE_LIVENESS_THRESHOLD: number;
+  FACE_MODEL_DIR: string;
+  FACE_MAX_PARALLEL: number;
+  FACE_THREADS: number;
   AADHAAR_ENV: string;
   AADHAAR_API_VERSION: string;
   AADHAAR_PID_VERSION: string;
@@ -244,6 +249,9 @@ const schema = Joi.object<Env>({
   SPOT_CHECK_DAILY_RATE: Joi.number().min(0).max(1).default(0.3),
   // Proxy punches must carry the worker's rolling QR code (off for the pilot; a code sent is always checked).
   COPRESENCE_REQUIRED: Joi.boolean().default(false),
+  // How shift times turn into marks: on time up to the grace, a half day past the percent.
+  ATTENDANCE_LATE_GRACE_MINUTES: Joi.number().integer().min(0).max(240).default(15),
+  ATTENDANCE_HALF_DAY_AFTER_PERCENT: Joi.number().integer().min(10).max(90).default(50),
   // Offline OSM tile pack (z/x/y.png + manifest.json) served at /tiles; unset = no local tiles.
   TILE_DIR: Joi.string().optional(),
   // Development / test only: the sample seed gives the web roles this password.
@@ -260,6 +268,10 @@ const schema = Joi.object<Env>({
   // Calibrated in the Phase 2 benchmark; these are starting values only.
   FACE_MATCH_THRESHOLD: Joi.number().min(0).max(1).default(0.45),
   FACE_LIVENESS_THRESHOLD: Joi.number().min(0).max(1).default(0.5),
+  // Local face models (see modules/face/README.md); relative paths are from backend/.
+  FACE_MODEL_DIR: Joi.string().default('storage/models'),
+  FACE_MAX_PARALLEL: Joi.number().integer().min(1).max(32).default(2),
+  FACE_THREADS: Joi.number().integer().min(1).max(32).default(2),
   AADHAAR_ENV: Joi.string().valid('P', 'PP').default('PP'),
   AADHAAR_API_VERSION: Joi.string().default('2.5'),
   AADHAAR_PID_VERSION: Joi.string().default('2.0'),

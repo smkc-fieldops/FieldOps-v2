@@ -33,6 +33,7 @@ import 'package:fieldops_api/src/model/complaint_status_dto.dart';
 import 'package:fieldops_api/src/model/conversation_dto.dart';
 import 'package:fieldops_api/src/model/create_assignment_dto.dart';
 import 'package:fieldops_api/src/model/create_challenge_dto.dart';
+import 'package:fieldops_api/src/model/create_face_enrolment_dto.dart';
 import 'package:fieldops_api/src/model/create_holiday_dto.dart';
 import 'package:fieldops_api/src/model/create_leave_dto.dart';
 import 'package:fieldops_api/src/model/create_office_dto.dart';
@@ -46,6 +47,8 @@ import 'package:fieldops_api/src/model/direct_dto.dart';
 import 'package:fieldops_api/src/model/effective_shift_dto.dart';
 import 'package:fieldops_api/src/model/error_code.dart';
 import 'package:fieldops_api/src/model/face_capture_options_dto.dart';
+import 'package:fieldops_api/src/model/face_enrolment_dto.dart';
+import 'package:fieldops_api/src/model/face_enrolment_list_dto.dart';
 import 'package:fieldops_api/src/model/generate_assignments_dto.dart';
 import 'package:fieldops_api/src/model/generate_assignments_result_dto.dart';
 import 'package:fieldops_api/src/model/health_dto.dart';
@@ -153,6 +156,7 @@ part 'serializers.g.dart';
   ConversationDto,
   CreateAssignmentDto,
   CreateChallengeDto,
+  CreateFaceEnrolmentDto,
   CreateHolidayDto,
   CreateLeaveDto,
   CreateOfficeDto,
@@ -166,6 +170,8 @@ part 'serializers.g.dart';
   EffectiveShiftDto,
   ErrorCode,
   FaceCaptureOptionsDto,
+  FaceEnrolmentDto,
+  FaceEnrolmentListDto,
   GenerateAssignmentsDto,
   GenerateAssignmentsResultDto,
   HealthDto,

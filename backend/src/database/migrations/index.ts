@@ -10,6 +10,8 @@ import { CreateJobsAndSummaries1793404800100 } from './1793404800100-create-jobs
 import { CreateUploads1793491200000 } from './1793491200000-create-uploads';
 import { CreateNotifications1793577600000 } from './1793577600000-create-notifications';
 import { UploadVoiceNotes1793577600100 } from './1793577600100-upload-voice-notes';
+import { CreateFaceTemplates1793664000000 } from './1793664000000-create-face-templates';
+import { AlertNotCheckedIn1793664000100 } from './1793664000100-alert-not-checked-in';
 
 /** Every migration, oldest first. Add new migrations at the end. */
 export const MIGRATIONS = [
@@ -25,4 +27,6 @@ export const MIGRATIONS = [
   CreateUploads1793491200000,
   CreateNotifications1793577600000,
   UploadVoiceNotes1793577600100,
+  CreateFaceTemplates1793664000000,
+  AlertNotCheckedIn1793664000100,
 ];

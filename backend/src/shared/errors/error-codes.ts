@@ -65,6 +65,8 @@ export enum ErrorCode {
   // Face verification
   FACE_PROVIDER_UNAVAILABLE = 'FACE_PROVIDER_UNAVAILABLE',
   FACE_NOT_ENROLLED = 'FACE_NOT_ENROLLED',
+  FACE_ENROL_PHOTO_UNUSABLE = 'FACE_ENROL_PHOTO_UNUSABLE',
+  FACE_ENROL_LIMIT_REACHED = 'FACE_ENROL_LIMIT_REACHED',
   AADHAAR_CAPTURE_FAILED = 'AADHAAR_CAPTURE_FAILED',
   AADHAAR_IDENTITY_MISSING = 'AADHAAR_IDENTITY_MISSING',
 }
@@ -198,6 +200,14 @@ export const ERROR_DEFINITIONS: Record<ErrorCode, ErrorDefinition> = {
   [ErrorCode.FACE_NOT_ENROLLED]: {
     status: 422,
     title: 'No enrolled face for this person; ask an administrator to enrol you',
+  },
+  [ErrorCode.FACE_ENROL_PHOTO_UNUSABLE]: {
+    status: 422,
+    title: 'The photo must show exactly one clear face',
+  },
+  [ErrorCode.FACE_ENROL_LIMIT_REACHED]: {
+    status: 409,
+    title: 'This person already has the most enrolment photos allowed; clear them first',
   },
   [ErrorCode.AADHAAR_CAPTURE_FAILED]: {
     status: 422,

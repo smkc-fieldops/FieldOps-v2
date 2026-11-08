@@ -17,29 +17,14 @@ export interface FaceAnalysis {
   embedding: Embedding;
 }
 
-/** Runs detection + anti-spoofing + embedding (YuNet, MiniFASNet, AuraFace). Built in Phase 2. */
+/** Runs detection + anti-spoofing + embedding (YuNet, MiniFASNet, AuraFace). See OnnxFaceEngine. */
 export abstract class FaceEngine {
   abstract analyse(image: Buffer): Promise<FaceAnalysis>;
 }
 
-/** Enrolled embeddings per person (3-5 enrolment photos). Built in Phase 2. */
+/** Enrolled embeddings per person (3-5 enrolment photos). See DbFaceTemplateStore. */
 export abstract class FaceTemplateStore {
   abstract embeddingsFor(staffId: string): Promise<Embedding[]>;
-}
-
-/** Placeholder until the ONNX models are installed (Phase 2). Fails clearly, never silently. */
-export class UnavailableFaceEngine extends FaceEngine {
-  async analyse(): Promise<FaceAnalysis> {
-    throw new AppError(ErrorCode.FACE_PROVIDER_UNAVAILABLE, 'Face models are not installed yet', {
-      provider: 'local',
-    });
-  }
-}
-
-export class EmptyFaceTemplateStore extends FaceTemplateStore {
-  async embeddingsFor(): Promise<Embedding[]> {
-    return [];
-  }
 }
 
 export interface LocalFaceSettings {

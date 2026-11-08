@@ -25,6 +25,7 @@
     "db:migrate:test": "npm run build && cross-env NODE_ENV=test npm run migration:run",
     "db:seed:dev": "npm run build && cross-env NODE_ENV=development node dist/database/seed/run-seed.js",
     "db:seed:test": "npm run build && cross-env NODE_ENV=test node dist/database/seed/run-seed.js",
+    "db:seed:pilot": "npm run build && cross-env NODE_ENV=development node dist/database/seed/run-pilot.js",
     "openapi:export": "cross-env NODE_ENV=development node dist/openapi/export-openapi.js"
   },
   "dependencies": {
@@ -45,7 +46,9 @@
     "fast-xml-parser": "^4.5.1",
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
+    "jpeg-js": "^0.4.4",
     "nestjs-pino": "^4.1.0",
+    "onnxruntime-node": "^1.31.1",
     "oracledb": "^6.7.0",
     "pdfkit": "^0.15.2",
     "pg": "^8.13.1",

@@ -16,7 +16,8 @@ export type AlertType =
   | 'TAMPER_DETECTED'
   | 'STATIONARY_TOO_LONG'
   | 'TASK_OVERDUE'
-  | 'REPEATED_LATE';
+  | 'REPEATED_LATE'
+  | 'NOT_CHECKED_IN';
 export type AlertSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
 /** Something a supervisor should look at, raised by the punch flow or a scheduled job. */

@@ -1284,6 +1284,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/face/enrolments/{staffId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A person's enrolled face photos (dates only; never the photo or embedding) */
+        get: operations["FaceController_listEnrolments"];
+        put?: never;
+        post?: never;
+        /** Remove all of a person's enrolment photos, so they can be enrolled again */
+        delete: operations["FaceController_clearEnrolments"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/face/enrolments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add one enrolment photo (up to 5); the photo is embedded and dropped */
+        post: operations["FaceController_enrol"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/spot-checks/mine": {
         parameters: {
             query?: never;
@@ -1518,7 +1553,7 @@ export interface components {
             pendingMigrations: boolean;
         };
         /** @enum {string} */
-        ErrorCode: "VALIDATION_FAILED" | "UNAUTHENTICATED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "VERSION_CONFLICT" | "PAYLOAD_TOO_LARGE" | "RULE_VIOLATION" | "RATE_LIMITED" | "HTTP_ERROR" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR" | "AUTH_INVALID_CREDENTIALS" | "AUTH_OTP_INVALID" | "AUTH_OTP_EXPIRED" | "AUTH_OTP_TOO_MANY_ATTEMPTS" | "AUTH_OTP_RATE_LIMITED" | "AUTH_OTP_DELIVERY_UNAVAILABLE" | "AUTH_SESSION_REVOKED" | "AUTH_ACCOUNT_INACTIVE" | "AUTH_WEAK_PASSWORD" | "STAFF_IDENTITY_TAKEN" | "STAFF_HAS_REPORTS" | "OFFICE_CODE_TAKEN" | "ROSTER_WORKER_TAKEN" | "ASSIGNMENT_EXISTS" | "HOLIDAY_DATE_TAKEN" | "LEAVE_OVERLAP" | "REGULARIZATION_EXISTS" | "WARD_CODE_TAKEN" | "INVALID_BOUNDARY" | "OUTSIDE_WARD" | "NO_ASSIGNMENT" | "ASSIGNMENT_NOT_APPROVED" | "OUTSIDE_GEOFENCE" | "LOCATION_TOO_INACCURATE" | "OUTSIDE_SHIFT_WINDOW" | "ALREADY_CHECKED_IN" | "ALREADY_CHECKED_OUT" | "NOT_CHECKED_IN" | "ON_LEAVE" | "CHALLENGE_INVALID" | "CHALLENGE_EXPIRED" | "FACE_MISMATCH" | "SPOT_CHECK_CLOSED" | "COPRESENCE_FAILED" | "FACE_PROVIDER_UNAVAILABLE" | "FACE_NOT_ENROLLED" | "AADHAAR_CAPTURE_FAILED" | "AADHAAR_IDENTITY_MISSING";
+        ErrorCode: "VALIDATION_FAILED" | "UNAUTHENTICATED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "VERSION_CONFLICT" | "PAYLOAD_TOO_LARGE" | "RULE_VIOLATION" | "RATE_LIMITED" | "HTTP_ERROR" | "SERVICE_UNAVAILABLE" | "INTERNAL_ERROR" | "AUTH_INVALID_CREDENTIALS" | "AUTH_OTP_INVALID" | "AUTH_OTP_EXPIRED" | "AUTH_OTP_TOO_MANY_ATTEMPTS" | "AUTH_OTP_RATE_LIMITED" | "AUTH_OTP_DELIVERY_UNAVAILABLE" | "AUTH_SESSION_REVOKED" | "AUTH_ACCOUNT_INACTIVE" | "AUTH_WEAK_PASSWORD" | "STAFF_IDENTITY_TAKEN" | "STAFF_HAS_REPORTS" | "OFFICE_CODE_TAKEN" | "ROSTER_WORKER_TAKEN" | "ASSIGNMENT_EXISTS" | "HOLIDAY_DATE_TAKEN" | "LEAVE_OVERLAP" | "REGULARIZATION_EXISTS" | "WARD_CODE_TAKEN" | "INVALID_BOUNDARY" | "OUTSIDE_WARD" | "NO_ASSIGNMENT" | "ASSIGNMENT_NOT_APPROVED" | "OUTSIDE_GEOFENCE" | "LOCATION_TOO_INACCURATE" | "OUTSIDE_SHIFT_WINDOW" | "ALREADY_CHECKED_IN" | "ALREADY_CHECKED_OUT" | "NOT_CHECKED_IN" | "ON_LEAVE" | "CHALLENGE_INVALID" | "CHALLENGE_EXPIRED" | "FACE_MISMATCH" | "SPOT_CHECK_CLOSED" | "COPRESENCE_FAILED" | "FACE_PROVIDER_UNAVAILABLE" | "FACE_NOT_ENROLLED" | "FACE_ENROL_PHOTO_UNUSABLE" | "FACE_ENROL_LIMIT_REACHED" | "AADHAAR_CAPTURE_FAILED" | "AADHAAR_IDENTITY_MISSING";
         ProblemDetailsDto: {
             /** @example urn:fieldops:error:NOT_FOUND */
             type: string;
@@ -2532,7 +2567,7 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** @enum {string} */
-            alertType: "LATE_CHECKIN" | "OUT_OF_ZONE" | "MISSED_SPOT_CHECK" | "GHOST_PUNCH" | "ABSENT" | "TAMPER_DETECTED" | "STATIONARY_TOO_LONG" | "TASK_OVERDUE" | "REPEATED_LATE";
+            alertType: "LATE_CHECKIN" | "OUT_OF_ZONE" | "MISSED_SPOT_CHECK" | "GHOST_PUNCH" | "ABSENT" | "TAMPER_DETECTED" | "STATIONARY_TOO_LONG" | "TASK_OVERDUE" | "REPEATED_LATE" | "NOT_CHECKED_IN";
             /** @enum {string} */
             severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
             /** Format: uuid */
@@ -2960,6 +2995,28 @@ export interface components {
             pidOptionsXml?: string;
             /** @example in.gov.uidai.rdservice.face.CAPTURE */
             intentAction?: string;
+        };
+        FaceEnrolmentDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            staffId: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        FaceEnrolmentListDto: {
+            items: components["schemas"]["FaceEnrolmentDto"][];
+            /**
+             * @description How many more photos can be added
+             * @example 4
+             */
+            remaining: number;
+        };
+        CreateFaceEnrolmentDto: {
+            /** Format: uuid */
+            staffId: string;
+            /** @description Base64 JPEG of the person's face (≤ 96000 chars); never stored */
+            imageBase64: string;
         };
         SpotCheckDto: {
             /** Format: uuid */
@@ -7083,7 +7140,7 @@ export interface operations {
             query?: {
                 /** @description false = the open queue */
                 isResolved?: boolean;
-                alertType?: "LATE_CHECKIN" | "OUT_OF_ZONE" | "MISSED_SPOT_CHECK" | "GHOST_PUNCH" | "ABSENT" | "TAMPER_DETECTED" | "STATIONARY_TOO_LONG" | "TASK_OVERDUE" | "REPEATED_LATE";
+                alertType?: "LATE_CHECKIN" | "OUT_OF_ZONE" | "MISSED_SPOT_CHECK" | "GHOST_PUNCH" | "ABSENT" | "TAMPER_DETECTED" | "STATIONARY_TOO_LONG" | "TASK_OVERDUE" | "REPEATED_LATE" | "NOT_CHECKED_IN";
                 severity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
                 /** @description Alerts about one person in your scope */
                 staffId?: string;
@@ -8134,6 +8191,69 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FaceCaptureOptionsDto"];
+                };
+            };
+        };
+    };
+    FaceController_listEnrolments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                staffId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FaceEnrolmentListDto"];
+                };
+            };
+        };
+    };
+    FaceController_clearEnrolments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                staffId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    FaceController_enrol: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFaceEnrolmentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FaceEnrolmentDto"];
                 };
             };
         };

@@ -25,6 +25,7 @@ doc/ComplaintsApi.md
 doc/ConversationDto.md
 doc/CreateAssignmentDto.md
 doc/CreateChallengeDto.md
+doc/CreateFaceEnrolmentDto.md
 doc/CreateHolidayDto.md
 doc/CreateLeaveDto.md
 doc/CreateOfficeDto.md
@@ -39,6 +40,8 @@ doc/EffectiveShiftDto.md
 doc/ErrorCode.md
 doc/FaceApi.md
 doc/FaceCaptureOptionsDto.md
+doc/FaceEnrolmentDto.md
+doc/FaceEnrolmentListDto.md
 doc/GenerateAssignmentsDto.md
 doc/GenerateAssignmentsResultDto.md
 doc/HealthApi.md
@@ -187,6 +190,7 @@ lib/src/model/complaint_status_dto.dart
 lib/src/model/conversation_dto.dart
 lib/src/model/create_assignment_dto.dart
 lib/src/model/create_challenge_dto.dart
+lib/src/model/create_face_enrolment_dto.dart
 lib/src/model/create_holiday_dto.dart
 lib/src/model/create_leave_dto.dart
 lib/src/model/create_office_dto.dart
@@ -201,6 +205,8 @@ lib/src/model/direct_dto.dart
 lib/src/model/effective_shift_dto.dart
 lib/src/model/error_code.dart
 lib/src/model/face_capture_options_dto.dart
+lib/src/model/face_enrolment_dto.dart
+lib/src/model/face_enrolment_list_dto.dart
 lib/src/model/generate_assignments_dto.dart
 lib/src/model/generate_assignments_result_dto.dart
 lib/src/model/health_dto.dart
@@ -287,23 +293,3 @@ lib/src/model/ward_dto.dart
 lib/src/model/ward_page_dto.dart
 lib/src/serializers.dart
 pubspec.yaml
-test/chat_api_test.dart
-test/conversation_dto_test.dart
-test/direct_dto_test.dart
-test/inbox_dto_test.dart
-test/mark_read_dto_test.dart
-test/marked_dto_test.dart
-test/message_dto_test.dart
-test/notification_dto_test.dart
-test/notifications_api_test.dart
-test/order_spot_check_dto_test.dart
-test/presence_key_dto_test.dart
-test/push_token_dto_test.dart
-test/remove_push_token_dto_test.dart
-test/respond_spot_check_dto_test.dart
-test/send_message_dto_test.dart
-test/spot_check_dto_test.dart
-test/spot_check_page_dto_test.dart
-test/spot_checks_api_test.dart
-test/tile_manifest_dto_test.dart
-test/tiles_api_test.dart

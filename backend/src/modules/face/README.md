@@ -13,6 +13,24 @@ providers needs **no app release**.
 
 Model selection and licences: `docs/FieldOps_Face_Recognition_Model_Selection_D4_...docx`.
 
+## Installing the local models
+
+Put these three files in `FACE_MODEL_DIR` (default `backend/storage/models`, not in git). The API
+answers `FACE_PROVIDER_UNAVAILABLE` until they are there; no restart is needed afterwards.
+
+| File | Source | Licence |
+| --- | --- | --- |
+| `glintr100.onnx` (261 MB) | Hugging Face `fal/AuraFace-v1` | Apache-2.0 |
+| `face_detection_yunet_2023mar.onnx` | Hugging Face `opencv/face_detection_yunet` | MIT |
+| `minifas_antispoof_int8.onnx` | GitHub `SuriAI/face-antispoof-onnx`, `models/best_model_quantized.onnx`, renamed | Apache-2.0 |
+
+Do not use the other files in the AuraFace repository (`2d106det.onnx`, `scrfd_*`, `1k3d68.onnx`,
+`genderage.onnx`): they match InsightFace's non-commercial packs.
+
+Enrol with `POST /face/enrolments` (ADMIN, or WARD_INSPECTOR for field staff of their ward).
+`scripts/face-smoke.mjs` runs the real models through a local API; Jest cannot, because ONNX Runtime
+does not work inside its sandbox.
+
 ## Switching to Aadhaar face authentication (plug and play)
 
 Only SMKC can do these steps; everything else is already built.

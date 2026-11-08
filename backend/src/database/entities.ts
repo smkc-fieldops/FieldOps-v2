@@ -26,6 +26,7 @@ import { RouteSummary } from '../modules/attendance/entities/route-summary.entit
 import { WardDailySummary } from '../modules/attendance/entities/ward-daily-summary.entity';
 import { Upload } from '../modules/uploads/entities/upload.entity';
 import { Notification } from '../modules/notifications/entities/notification.entity';
+import { FaceTemplate } from '../modules/face/entities/face-template.entity';
 import { PushToken } from '../modules/notifications/entities/push-token.entity';
 import { JobLock } from '../shared/jobs/job-lock.entity';
 
@@ -60,5 +61,6 @@ export const ENTITIES = [
   JobLock,
   Upload,
   Notification,
+  FaceTemplate,
   PushToken,
 ];

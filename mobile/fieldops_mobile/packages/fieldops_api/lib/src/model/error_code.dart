@@ -107,6 +107,10 @@ class ErrorCode extends EnumClass {
   static const ErrorCode FACE_PROVIDER_UNAVAILABLE = _$FACE_PROVIDER_UNAVAILABLE;
   @BuiltValueEnumConst(wireName: r'FACE_NOT_ENROLLED')
   static const ErrorCode FACE_NOT_ENROLLED = _$FACE_NOT_ENROLLED;
+  @BuiltValueEnumConst(wireName: r'FACE_ENROL_PHOTO_UNUSABLE')
+  static const ErrorCode FACE_ENROL_PHOTO_UNUSABLE = _$FACE_ENROL_PHOTO_UNUSABLE;
+  @BuiltValueEnumConst(wireName: r'FACE_ENROL_LIMIT_REACHED')
+  static const ErrorCode FACE_ENROL_LIMIT_REACHED = _$FACE_ENROL_LIMIT_REACHED;
   @BuiltValueEnumConst(wireName: r'AADHAAR_CAPTURE_FAILED')
   static const ErrorCode AADHAAR_CAPTURE_FAILED = _$AADHAAR_CAPTURE_FAILED;
   @BuiltValueEnumConst(wireName: r'AADHAAR_IDENTITY_MISSING')

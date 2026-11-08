@@ -172,6 +172,13 @@ export class AppConfig {
     return /^\d+$/.test(raw) ? Number(raw) : raw;
   }
 
+  get attendanceTiming(): { lateGraceMinutes: number; halfDayAfterPercent: number } {
+    return {
+      lateGraceMinutes: this.config.get('ATTENDANCE_LATE_GRACE_MINUTES', { infer: true }),
+      halfDayAfterPercent: this.config.get('ATTENDANCE_HALF_DAY_AFTER_PERCENT', { infer: true }),
+    };
+  }
+
   get faceProvider(): FaceProvider {
     return this.config.get('FACE_PROVIDER', { infer: true });
   }
@@ -180,6 +187,15 @@ export class AppConfig {
     return {
       matchThreshold: this.config.get('FACE_MATCH_THRESHOLD', { infer: true }),
       livenessThreshold: this.config.get('FACE_LIVENESS_THRESHOLD', { infer: true }),
+    };
+  }
+
+  /** The local face models: their folder and how much CPU analyses may take. */
+  get face(): { modelDir: string; maxParallel: number; threadsPerModel: number } {
+    return {
+      modelDir: this.config.get('FACE_MODEL_DIR', { infer: true }),
+      maxParallel: this.config.get('FACE_MAX_PARALLEL', { infer: true }),
+      threadsPerModel: this.config.get('FACE_THREADS', { infer: true }),
     };
   }
 

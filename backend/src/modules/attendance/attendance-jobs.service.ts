@@ -28,13 +28,15 @@ import {
   CHALLENGE_RETENTION_DAYS,
   dayCloseDates,
   dayCloseStatus,
+  isSilent,
   isWeeklyOff,
   LEAVE_RECONCILE_DAYS,
-  reconciledStatus,
-  REGULARIZATION_RECONCILE_DAYS,
-  isSilent,
+  notCheckedInDue,
+  pastHalfDayPoint,
   pingDate,
   pingWindow,
+  reconciledStatus,
+  REGULARIZATION_RECONCILE_DAYS,
   retentionCutoff,
   rollupDates,
   RoutePing,
@@ -163,9 +165,10 @@ export class AttendanceJobsService {
   // ------------------------------------------------------------ Day close (every 30 min)
 
   /**
-   * Gives every expected person a row once their shift has ended: approved field placements and
-   * active office staff without a check-in become REGULARIZED, ON_LEAVE, HOLIDAY_OFF or ABSENT
-   * (with an ABSENT alert). Then applies supervisors' decisions to rows that exist: approved
+   * Gives every expected person a row once past the half-day point of their shift: approved field
+   * placements and active office staff without a check-in become REGULARIZED, ON_LEAVE,
+   * HOLIDAY_OFF or ABSENT (with an ABSENT alert). A later check-in turns the row into a half day
+   * and resolves the alert. Then applies supervisors' decisions to rows that exist: approved
    * corrections make the day REGULARIZED, approved leave turns ABSENT days into ON_LEAVE.
    */
   async closeDays(): Promise<string> {
@@ -184,27 +187,13 @@ export class AttendanceJobsService {
       if (!leaveOn.has(date)) leaveOn.set(date, await this.leave.staffOnLeave(date));
       return leaveOn.get(date)!;
     };
-    const officeIds = await this.staff.findIds({ role: Role.OFFICE_STAFF, isActive: true });
-    // Ward inspectors have no assignment row: they are expected in their own ward every day.
-    const wardInspectors = (
-      await this.staff.findByIds(
-        await this.staff.findIds({ role: Role.WARD_INSPECTOR, isActive: true }),
-      )
-    ).filter((s) => s.homeWardId);
+    const timing = this.config.attendanceTiming;
+    const unplaced = await this.unplacedStaff();
 
     let written = 0;
     let absent = 0;
     for (const date of dayCloseDates(now)) {
-      const expected = new Map<string, { wardId: string | null; assignmentId: string | null }>();
-      for (const p of await this.rosters.approvedPlacements(date)) {
-        expected.set(p.staffId, { wardId: p.wardId, assignmentId: p.assignmentId });
-      }
-      for (const s of wardInspectors) {
-        if (!expected.has(s.id)) expected.set(s.id, { wardId: s.homeWardId!, assignmentId: null });
-      }
-      for (const id of officeIds) {
-        if (!expected.has(id)) expected.set(id, { wardId: null, assignmentId: null });
-      }
+      const expected = await this.expectedOn(date, unplaced);
       const logged = new Set((await this.attendance.findForDate(date)).map((l) => l.staffId));
       const missing = [...expected.keys()].filter((id) => !logged.has(id));
       if (missing.length === 0) continue;
@@ -221,7 +210,7 @@ export class AttendanceJobsService {
         const kind = place.wardId ? 'WARD' : 'OFFICE';
         const status = dayCloseStatus({
           kind,
-          shiftEnded: now >= shift.endsAt,
+          pastHalfDayPoint: pastHalfDayPoint(shift, now, timing),
           regularized: regularized.has(`${person.id}|${date}`),
           onLeave: leave.has(person.id),
           holiday,
@@ -273,6 +262,82 @@ export class AttendanceJobsService {
       }
     }
     return `wrote ${written} day rows (${absent} absent), corrected ${corrected}`;
+  }
+
+  // ------------------------------------------------------------ Not checked in (every 15 min)
+
+  /**
+   * Tells supervisors who is past the grace with no check-in, while they can still act on it. Not
+   * for anyone on leave, off that day or with an approved correction. Resolved by the check-in.
+   */
+  async flagNotCheckedIn(): Promise<string> {
+    const now = this.clock.now();
+    const timing = this.config.attendanceTiming;
+    const unplaced = await this.unplacedStaff();
+    const holidayOrOff = async (date: string) => (await this.holidays.isHoliday(date)) || isWeeklyOff(date);
+    let raised = 0;
+    // Yesterday too: a night shift that started then is still running.
+    for (const date of dayCloseDates(now).slice(-2)) {
+      const expected = await this.expectedOn(date, unplaced);
+      const logged = new Set((await this.attendance.findForDate(date)).map((l) => l.staffId));
+      const missing = [...expected.keys()].filter((id) => !logged.has(id));
+      if (missing.length === 0) continue;
+
+      const people = await this.staff.findByIds(missing);
+      const shifts = await this.shifts.shiftsFor(people, date);
+      const leave = await this.leave.staffOnLeave(date);
+      const corrected = new Set(
+        (await this.leave.approvedRegularizations(date, date)).map((r) => r.staffId),
+      );
+      const off = await holidayOrOff(date);
+      for (const person of people) {
+        if (istDate(person.createdAt) > date) continue;
+        if (leave.has(person.id) || corrected.has(person.id)) continue;
+        const place = expected.get(person.id)!;
+        if (!place.wardId && off) continue;
+        if (!notCheckedInDue(shifts.get(person.id)!, now, timing)) continue;
+        await this.raise({
+          alertType: 'NOT_CHECKED_IN',
+          severity: 'LOW',
+          message: `${person.fullName} has not checked in for the shift on ${date}`,
+          messageMr: `${person.fullNameMr ?? person.fullName} यांनी ${date} रोजीच्या शिफ्टसाठी अजून हजेरी लावली नाही`,
+          staffId: person.id,
+          wardId: place.wardId ?? undefined,
+          details: { date },
+          dedupeKey: dedupeKey('NOT_CHECKED_IN', person.id, date),
+        });
+        raised++;
+      }
+    }
+    return `flagged ${raised} people`;
+  }
+
+  /** Who is expected without a placement row: office staff, and ward inspectors in their ward. */
+  private async unplacedStaff(): Promise<{ officeIds: string[]; wardInspectors: Staff[] }> {
+    const officeIds = await this.staff.findIds({ role: Role.OFFICE_STAFF, isActive: true });
+    const wardInspectors = (
+      await this.staff.findByIds(
+        await this.staff.findIds({ role: Role.WARD_INSPECTOR, isActive: true }),
+      )
+    ).filter((s) => s.homeWardId);
+    return { officeIds, wardInspectors };
+  }
+
+  private async expectedOn(
+    date: string,
+    unplaced: { officeIds: string[]; wardInspectors: Staff[] },
+  ): Promise<Map<string, { wardId: string | null; assignmentId: string | null }>> {
+    const expected = new Map<string, { wardId: string | null; assignmentId: string | null }>();
+    for (const p of await this.rosters.approvedPlacements(date)) {
+      expected.set(p.staffId, { wardId: p.wardId, assignmentId: p.assignmentId });
+    }
+    for (const s of unplaced.wardInspectors) {
+      if (!expected.has(s.id)) expected.set(s.id, { wardId: s.homeWardId!, assignmentId: null });
+    }
+    for (const id of unplaced.officeIds) {
+      if (!expected.has(id)) expected.set(id, { wardId: null, assignmentId: null });
+    }
+    return expected;
   }
 
   /** Writes a closed day's row. False when it exists already (checked in meanwhile, or a rerun). */
